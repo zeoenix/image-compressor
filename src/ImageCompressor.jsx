@@ -19,7 +19,7 @@ const Header = () => {
     <header className="border-b border-gray-200 bg-white" style={{ paddingLeft: '40px', paddingRight: '48px', paddingTop: '20px', paddingBottom: '20px' }}>
       <div className="flex items-center justify-between w-full">
         <a href="/" className="flex items-center gap-3 cursor-pointer">
-          <img src="/src/assets/image/pen.png" alt="Logo" className="w-9 h-9 object-contain" />
+          <img src={require('./assets/image/pen.png')} alt="Logo" className="w-9 h-9 object-contain" />
           <span className="text-xl font-bold text-gray-800">ImageCompress</span>
         </a>
         <div className="flex items-center gap-5">
