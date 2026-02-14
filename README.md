@@ -1,6 +1,10 @@
-# ✂️ ImageCompress
+
+# 🖊️ ImageCompress
+
 
 A fast, browser-based image compression tool built with React. Compress JPG, PNG, SVG, and GIF files without losing quality — all processing happens in your browser, no uploads to any server.
+
+**Now with authentication (Google & Email), free trial gating, and email verification!**
 
 > Inspired by [iLoveIMG](https://www.iloveimg.com/)
 
@@ -40,6 +44,7 @@ A fast, browser-based image compression tool built with React. Compress JPG, PNG
 | [Vite 7](https://vite.dev/) | Build tool & dev server |
 | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
 | [browser-image-compression](https://www.npmjs.com/package/browser-image-compression) | Client-side image compression |
+| [Firebase Auth](https://firebase.google.com/docs/auth) | Google & Email/Password authentication, email verification |
 | [ESLint](https://eslint.org/) | Code linting |
 
 ---
@@ -60,19 +65,25 @@ my-image-compressor/
     ├── App.css                 # (empty — styles handled by Tailwind)
     ├── index.css               # Global styles + Tailwind import
     ├── ImageCompressor.jsx     # Main app — all UI & compression logic
+    ├── components/
+    │   └── Login.jsx           # Login/Signup page (split-screen, email verification)
+    ├── context/
+    │   └── AuthContext.jsx     # Auth logic (Google, Email, verification)
     └── assets/
         └── image/
-            └── Scissor.png     # Logo icon
+            └── pen.png         # Logo icon (used in header & favicon)
 ```
 
 ### Key File: `src/ImageCompressor.jsx`
 
-Contains everything:
 
-- **Header** — Logo, Login, Sign up
+### Key Features
+
+- **Header** — Pen logo, Login, Sign up
 - **Upload Screen** — "Select images" button with drag-drop zone
 - **Compress Screen** — Image preview + sidebar with level selector (Low / Medium / High / Custom)
 - **Results Screen** — Circular progress indicator, size stats, download button
+- **Authentication** — Google & Email/Password login, email verification, free trial gating (1 free compression for guests)
 - **Footer** — Copyright
 
 ---
@@ -91,7 +102,7 @@ npm install
 npm run dev
 ```
 
-Open [http://localhost:5174](http://localhost:5174)
+Open [http://localhost:5173](http://localhost:5173)
 
 ### Other Commands
 

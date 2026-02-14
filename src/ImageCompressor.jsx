@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import imageCompression from 'browser-image-compression';
+import { useAuth } from './context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 // Compression targets as percentage of original size
 const compressionTargets = {
@@ -9,31 +11,70 @@ const compressionTargets = {
 };
 
 // Reusable Header Component
-const Header = () => (
-  <header className="border-b border-gray-200 bg-white py-4 px-8">
-    <div className="flex items-center justify-between w-full">
-      <div className="flex items-center gap-3">
-        <svg className="w-9 h-9 text-[#3D85C6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M4 4h10v16H4z" />
-          <path d="M8 4V2" />
-          <path d="M7 8h4M7 12h4" />
-          <path d="M18 8l-4 4 4 4" />
-          <path d="M14 12h6" />
-          <path d="M20 6v12" />
-        </svg>
-        <span className="text-xl font-bold text-gray-800">ImageCompress</span>
+const Header = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  return (
+    <header className="border-b border-gray-200 bg-white" style={{ paddingLeft: '40px', paddingRight: '48px', paddingTop: '20px', paddingBottom: '20px' }}>
+      <div className="flex items-center justify-between w-full">
+        <a href="/" className="flex items-center gap-3 cursor-pointer">
+          <img src="/src/assets/image/pen.png" alt="Logo" className="w-9 h-9 object-contain" />
+          <span className="text-xl font-bold text-gray-800">ImageCompress</span>
+        </a>
+        <div className="flex items-center gap-5">
+          {user ? (
+            <>
+              <div className="flex items-center gap-3">
+                {user.photoURL ? (
+                  <img src={user.photoURL} alt="" className="w-9 h-9 rounded-full border-2 border-gray-200" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-[#3D85C6] flex items-center justify-center text-white font-bold text-sm">
+                    {(user.displayName || user.email || '?')[0].toUpperCase()}
+                  </div>
+                )}
+                <span className="text-gray-700 font-medium hidden sm:block">
+                  {user.displayName || user.email}
+                </span>
+              </div>
+              <button
+                onClick={logout}
+                className="px-5 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/login')}
+                className="px-6 py-2.5 text-[#3D85C6] font-semibold rounded-full hover:bg-blue-50 transition-all duration-300 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                  <polyline points="10 17 15 12 10 7"/>
+                  <line x1="15" y1="12" x2="3" y2="12"/>
+                </svg>
+                Login
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="bg-[#3D85C6] text-white font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-[#2E6BA6] hover:scale-105 transition-all duration-300 flex items-center gap-2"
+                style={{ padding: '10px 48px' }}
+              >
+                Sign up
+                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"/>
+                  <polyline points="12 5 19 12 12 19"/>
+                </svg>
+              </button>
+            </>
+          )}
+        </div>
       </div>
-      <div className="flex items-center gap-5">
-        <button className="text-gray-700 font-medium hover:text-blue-600 transition-colors">
-          Login
-        </button>
-        <button className="px-6 py-2.5 bg-[#3D85C6] text-white font-semibold rounded-lg hover:bg-[#2E6BA6] transition-colors">
-          Sign up
-        </button>
-      </div>
-    </div>
-  </header>
-);
+    </header>
+  );
+};
 
 // Reusable Footer Component
 const Footer = () => (
@@ -51,10 +92,37 @@ const ImageCompressor = () => {
   const [isCompressing, setIsCompressing] = useState(false);
   const [fileName, setFileName] = useState('');
   const [customTargetKB, setCustomTargetKB] = useState('');
+  const [showSignInPopup, setShowSignInPopup] = useState(false);
+
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
+  // Check if user is a verified/genuine user
+  // Google users are always verified; email users must verify email
+  const isVerifiedUser = user && (
+    user.providerData[0]?.providerId === 'google.com' || user.emailVerified
+  );
+
+  // Get how many free compressions have been used
+  const getFreeUsageCount = () => {
+    return parseInt(localStorage.getItem('freeCompressions') || '0', 10);
+  };
+
+  const incrementFreeUsage = () => {
+    const current = getFreeUsageCount();
+    localStorage.setItem('freeCompressions', String(current + 1));
+  };
 
   const handleImageUpload = (event) => {
     const imageFile = event.target.files[0];
     if (imageFile) {
+      // If not a verified user and already used free compression, show popup
+      if (!isVerifiedUser && getFreeUsageCount() >= 1) {
+        setShowSignInPopup(true);
+        event.target.value = ''; // Reset file input
+        return;
+      }
+
       setOriginalImage(imageFile);
       setFileName(imageFile.name);
       setOriginalSize((imageFile.size / 1024 / 1024).toFixed(2));
@@ -65,6 +133,7 @@ const ImageCompressor = () => {
 
   const compressImage = useCallback(async () => {
     if (!originalImage) return;
+
     setIsCompressing(true);
     try {
       let targetSizeMB;
@@ -94,13 +163,66 @@ const ImageCompressor = () => {
       const compressedFile = await imageCompression(originalImage, options);
       setCompressedImage(compressedFile);
       setCompressedSize((compressedFile.size / 1024 / 1024).toFixed(2));
+
+      // Track free usage for non-verified users
+      if (!isVerifiedUser) {
+        incrementFreeUsage();
+      }
     } catch (error) {
       console.error('Error compressing image:', error);
       alert('Failed to compress image. Please try again.');
     } finally {
       setIsCompressing(false);
     }
-  }, [originalImage, compressionLevel, customTargetKB]);
+  }, [originalImage, compressionLevel, customTargetKB, isVerifiedUser]);
+
+  // Sign In Popup Modal
+  const SignInPopup = () => (
+    <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
+      <div className="bg-white shadow-2xl max-w-md w-full mx-4 overflow-hidden" style={{ borderRadius: '24px' }}>
+        {/* Top accent */}
+        <div className="bg-[#3D85C6]" style={{ height: '6px', borderRadius: '24px 24px 0 0' }}></div>
+        <div style={{ padding: '40px 32px 32px' }} className="text-center">
+          {/* Icon */}
+          <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mx-auto" style={{ marginBottom: '20px' }}>
+            <svg className="w-8 h-8 text-[#3D85C6]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+
+          <h2 className="text-2xl font-bold text-gray-900" style={{ marginBottom: '8px' }}>You've used your free try!</h2>
+          <p className="text-gray-500" style={{ marginBottom: '28px' }}>Sign in or create an account to compress unlimited images for free.</p>
+
+          {/* Buttons */}
+          <button
+            onClick={() => { setShowSignInPopup(false); navigate('/login'); }}
+            className="w-full bg-[#3D85C6] text-white font-semibold rounded-full hover:bg-[#2E6BA6] transition-all duration-200 flex items-center justify-center gap-2"
+            style={{ padding: '14px 0', marginBottom: '12px' }}
+          >
+            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+              <polyline points="10 17 15 12 10 7"/>
+              <line x1="15" y1="12" x2="3" y2="12"/>
+            </svg>
+            Sign in
+          </button>
+          <button
+            onClick={() => { setShowSignInPopup(false); navigate('/login'); }}
+            className="w-full border-2 border-gray-200 text-gray-700 font-semibold rounded-full hover:border-[#3D85C6] hover:text-[#3D85C6] hover:bg-blue-50 transition-all duration-200"
+            style={{ padding: '14px 0', marginBottom: '16px' }}
+          >
+            Create an account
+          </button>
+          <button
+            onClick={() => setShowSignInPopup(false)}
+            className="text-gray-400 hover:text-gray-600 text-sm font-medium transition-colors"
+          >
+            Maybe later
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 
   const downloadCompressedImage = () => {
     if (!compressedImage) return;
@@ -175,6 +297,7 @@ const ImageCompressor = () => {
           </div>
         </main>
         <Footer />
+        {showSignInPopup && <SignInPopup />}
       </div>
     );
   }
@@ -197,12 +320,13 @@ const ImageCompressor = () => {
               </svg>
             </button>
             
-            <div className="bg-green-50 border-2 border-green-200 rounded-2xl p-4">
+            <div className="bg-green-50 rounded-2xl" style={{ border: '2px solid #bbf7d0', padding: '20px' }}>
               <button
                 onClick={downloadCompressedImage}
-                className="px-16 py-5 bg-green-500 hover:bg-green-600 text-white font-bold text-xl rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-3"
+                className="bg-green-500 hover:bg-green-600 text-white font-bold text-2xl rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 flex items-center gap-4"
+                style={{ padding: '24px 64px' }}
               >
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                 </svg>
                 Download compressed IMAGE
@@ -244,6 +368,7 @@ const ImageCompressor = () => {
           </div>
         </main>
         <Footer />
+        {showSignInPopup && <SignInPopup />}
       </div>
     );
   }
@@ -381,6 +506,7 @@ const ImageCompressor = () => {
       </main>
 
       <Footer />
+      {showSignInPopup && <SignInPopup />}
     </div>
   );
 };
