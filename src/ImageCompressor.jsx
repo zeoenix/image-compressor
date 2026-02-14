@@ -16,31 +16,37 @@ const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
+  const [showMenu, setShowMenu] = React.useState(false);
   return (
-    <header className="border-b border-gray-200 bg-white" style={{ paddingLeft: '40px', paddingRight: '48px', paddingTop: '20px', paddingBottom: '20px' }}>
-      <div className="flex items-center justify-between w-full">
-        <a href="/" className="flex items-center gap-3 cursor-pointer">
-          <img src={pen} alt="Logo" className="w-9 h-9 object-contain" />
-          <span className="text-xl font-bold text-gray-800">ImageCompress</span>
-        </a>
-        <div className="flex items-center gap-5">
+    <header className="border-b border-gray-200 bg-white px-8 sm:px-16" style={{ paddingTop: '16px', paddingBottom: '16px' }}>
+      <div className="relative flex flex-row items-center w-full" style={{ minHeight: '56px' }}>
+        {/* Logo group moved left with explicit padding */}
+        <div className="flex items-center" style={{ paddingLeft: '30px' }}>
+          <a href="/" className="flex items-center gap-0.5 sm:gap-1 cursor-pointer">
+            <img src={pen} alt="Logo" className="w-9 h-9 object-contain -ml-1 sm:-ml-2" />
+            <span className="text-lg sm:text-xl font-bold text-gray-800">ImageCompress</span>
+          </a>
+        </div>
+        <div className="flex-1"></div>
+        <div className="absolute right-0 top-0 h-full flex items-center" style={{ paddingRight: '15px' }}>
+          {/* Desktop: show buttons, Mobile: show hamburger menu */}
+          <div className="hidden sm:flex flex-row items-center gap-5">
           {user ? (
             <>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-full shadow-sm">
                 {user.photoURL ? (
-                  <img src={user.photoURL} alt="" className="w-9 h-9 rounded-full border-2 border-gray-200" />
+                  <img src={user.photoURL} alt="avatar" className="w-9 h-9 rounded-full object-cover bg-[#3D85C6] text-white" />
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-[#3D85C6] flex items-center justify-center text-white font-bold text-sm">
-                    {(user.displayName || user.email || '?')[0].toUpperCase()}
+                  <div className="w-9 h-9 rounded-full flex items-center justify-center bg-[#3D85C6] text-white font-bold text-lg">
+                    {user.displayName ? user.displayName[0].toUpperCase() : (user.email ? user.email[0].toUpperCase() : 'U')}
                   </div>
                 )}
-                <span className="text-gray-700 font-medium hidden sm:block">
-                  {user.displayName || user.email}
-                </span>
+                <span className="font-semibold text-[#3D85C6] text-base">{user.displayName || user.email}</span>
               </div>
               <button
                 onClick={logout}
-                className="px-5 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium transition-colors"
+                className="bg-white text-[#3D85C6] font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 flex items-center gap-2 text-lg border border-[#3D85C6] mr-2"
+                style={{ padding: '10px 32px' }}
               >
                 Logout
               </button>
@@ -49,29 +55,82 @@ const Header = () => {
             <>
               <button
                 onClick={() => navigate('/login')}
-                className="px-6 py-2.5 text-[#3D85C6] font-semibold rounded-full hover:bg-blue-50 transition-all duration-300 flex items-center gap-2"
+                className="bg-white text-[#3D85C6] font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-gray-100 hover:scale-105 transition-all duration-300 flex items-center gap-2 text-lg border border-[#3D85C6]"
+                style={{ padding: '10px 32px' }}
               >
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                  <polyline points="10 17 15 12 10 7"/>
-                  <line x1="15" y1="12" x2="3" y2="12"/>
-                </svg>
                 Login
               </button>
               <button
                 onClick={() => navigate('/login')}
-                className="bg-[#3D85C6] text-white font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-[#2E6BA6] hover:scale-105 transition-all duration-300 flex items-center gap-2"
-                style={{ padding: '10px 48px' }}
+                className="bg-[#3D85C6] text-white font-semibold rounded-full shadow-lg hover:shadow-xl hover:bg-[#2E6BA6] hover:scale-105 transition-all duration-300 flex items-center gap-2 text-lg"
+                style={{ padding: '10px 32px' }}
               >
                 Sign up
-                <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="5" y1="12" x2="19" y2="12"/>
-                  <polyline points="12 5 19 12 12 19"/>
-                </svg>
               </button>
             </>
           )}
         </div>
+        {/* Mobile: 3-dot menu */}
+        <div className="flex sm:hidden items-center justify-end relative z-50">
+          {/* Overlay */}
+          {showMenu && (
+            <div onClick={() => setShowMenu(false)} className="fixed inset-0 bg-transparent backdrop-blur-sm transition-opacity animate-fade-in z-40"></div>
+          )}
+          {/* Animated hamburger/close button */}
+          <button
+            onClick={() => setShowMenu((v) => !v)}
+            className="p-2 rounded-full hover:bg-gray-100 focus:outline-none z-50 transition-all flex items-center"
+            aria-label={showMenu ? 'Close menu' : 'Open menu'}
+          >
+            {showMenu ? (
+              <svg className="w-8 h-8 text-gray-700 transition-transform duration-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="6" y1="6" x2="18" y2="18" />
+                <line x1="6" y1="18" x2="18" y2="6" />
+              </svg>
+            ) : (
+              <svg className="w-8 h-8 text-gray-700 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                <line x1="4" y1="7" x2="20" y2="7" />
+                <line x1="4" y1="12" x2="20" y2="12" />
+                <line x1="4" y1="17" x2="20" y2="17" />
+              </svg>
+            )}
+          </button>
+          {/* Slide-down menu */}
+          <div className={`absolute right-2 top-14 w-64 transition-all duration-200 ${showMenu ? 'opacity-100 scale-100 translate-y-0 pointer-events-auto' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'} bg-white/60 border border-white/40 rounded-3xl shadow-2xl flex flex-col z-50 backdrop-blur-xl`} style={{ boxShadow: '0 8px 32px 0 rgba(61,133,198,0.10), 0 1.5px 8px 0 rgba(61,133,198,0.08)' }}>
+            {showMenu && (
+              user ? (
+                <button
+                  onClick={() => { setShowMenu(false); logout(); }}
+                  className="flex items-center gap-4 px-8 py-5 text-xl font-bold text-gray-700 border-b border-white/30 hover:bg-white/70 hover:backdrop-blur-lg transition-all text-left rounded-t-3xl"
+                  style={{ letterSpacing: '0.01em' }}
+                >
+                  <svg className="w-6 h-6 text-[#3D85C6]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7"/><rect x="3" y="5" width="4" height="14" rx="2"/></svg>
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={() => { setShowMenu(false); navigate('/login'); }}
+                    className="flex items-center gap-4 px-8 py-5 text-xl font-bold text-[#3D85C6] hover:bg-white/80 hover:backdrop-blur-lg transition-all text-left border-b border-white/30 rounded-t-3xl"
+                    style={{ letterSpacing: '0.01em' }}
+                  >
+                    <svg className="w-6 h-6 text-[#3D85C6]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
+                    Login
+                  </button>
+                  <button
+                    onClick={() => { setShowMenu(false); navigate('/login'); }}
+                    className="flex items-center gap-4 px-8 py-5 text-xl font-bold text-[#3D85C6] hover:bg-white/80 hover:backdrop-blur-lg transition-all text-left rounded-b-3xl"
+                    style={{ letterSpacing: '0.01em' }}
+                  >
+                    <svg className="w-6 h-6 text-[#3D85C6]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                    Sign up
+                  </button>
+                </>
+              )
+            )}
+          </div>
+        </div>
+      </div>
       </div>
     </header>
   );
@@ -379,94 +438,95 @@ const ImageCompressor = () => {
     <div className="min-h-screen w-full bg-white flex flex-col">
       <Header />
 
-      <main className="flex-1 flex px-6 py-8">
+      <main className="flex-1 flex flex-col md:flex-row px-2 sm:px-6 py-4 sm:py-8 gap-4 md:gap-0">
         {/* Image Preview Area */}
-        <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl mr-6 border border-gray-200">
-          <div className="relative">
-            <div className="p-6">
+        <div className="flex-1 flex items-center justify-center bg-gray-50 rounded-xl md:mr-6 border border-gray-200 min-w-0">
+          <div className="relative w-full max-w-xs sm:max-w-sm mx-auto">
+            <div className="p-3 sm:p-6">
               <img
                 src={URL.createObjectURL(originalImage)}
                 alt="Original"
-                className="max-w-sm max-h-80 object-contain rounded-lg"
+                className="w-full max-w-xs sm:max-w-sm max-h-60 sm:max-h-80 object-contain rounded-lg mx-auto"
               />
-              <p className="text-center text-gray-500 text-sm mt-3 truncate max-w-sm">{fileName}</p>
+              <p className="text-center text-gray-500 text-xs sm:text-sm mt-2 truncate max-w-xs sm:max-w-sm">{fileName}</p>
               <p className="text-center text-gray-400 text-xs mt-1">Original: {originalSize} MB</p>
             </div>
             {/* Image count badge */}
             <div className="absolute top-2 left-2 px-3 py-1 bg-[#3D85C6] rounded-full">
-              <span className="text-white text-sm font-semibold">1 image</span>
+              <span className="text-white text-xs sm:text-sm font-semibold">1 image</span>
             </div>
           </div>
         </div>
 
-        {/* Right Sidebar with Compression Options */}
-        <div className="w-96 bg-white rounded-xl border border-gray-200 p-6 flex flex-col">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Compress images</h2>
-          <p className="text-gray-500 text-sm mb-6">Select compression level</p>
-          
+        {/* Sidebar: Compression Options (collapsible on mobile) */}
+        <div className="w-full md:w-96 bg-white rounded-xl border border-gray-200 p-3 sm:p-6 flex flex-col mt-4 md:mt-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2 sm:mb-3">Compress images</h2>
+          <p className="text-gray-500 text-xs sm:text-sm mb-5 sm:mb-8">Select compression level</p>
           {/* Compression Level Options */}
-          <div className="space-y-3 mb-6">
-            {levelOptions.map((item) => (
-              <button 
-                key={item.value}
-                onClick={() => setCompressionLevel(item.value)}
-                className={`w-full p-4 rounded-xl border-2 text-left transition-all duration-200 ${
-                  compressionLevel === item.value 
-                    ? item.color === 'emerald' ? 'border-emerald-500 bg-emerald-50' :
-                      item.color === 'blue' ? 'border-blue-500 bg-blue-50' :
-                      item.color === 'amber' ? 'border-amber-500 bg-amber-50' :
-                      'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className={`font-semibold ${
-                      compressionLevel === item.value
-                        ? item.color === 'emerald' ? 'text-emerald-700' :
-                          item.color === 'blue' ? 'text-blue-700' :
-                          item.color === 'amber' ? 'text-amber-700' : 'text-purple-700'
-                        : 'text-gray-800'
-                    }`}>{item.name}</p>
-                    <p className="text-gray-500 text-sm">{item.desc}</p>
-                  </div>
-                  {compressionLevel === item.value && (
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      item.color === 'emerald' ? 'bg-emerald-500' :
-                      item.color === 'blue' ? 'bg-blue-500' :
-                      item.color === 'amber' ? 'bg-amber-500' : 'bg-purple-500'
-                    }`}>
-                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
-                      </svg>
+          <div className="mb-4 sm:mb-6">
+            {levelOptions.map((item, idx) => (
+              <div key={item.value} className={idx !== 0 ? 'mt-4 sm:mt-6' : ''}>
+                <button 
+                  onClick={() => setCompressionLevel(item.value)}
+                  className={`w-full py-4 sm:py-5 px-4 sm:px-6 rounded-2xl border-2 text-left transition-all duration-200 text-base sm:text-lg ${
+                    compressionLevel === item.value 
+                      ? item.color === 'emerald' ? 'border-emerald-500 bg-emerald-50' :
+                        item.color === 'blue' ? 'border-blue-500 bg-blue-50' :
+                        item.color === 'amber' ? 'border-amber-500 bg-amber-50' :
+                        'border-purple-500 bg-purple-50'
+                      : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
+                  style={{ minHeight: '64px' }}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className={`font-semibold ${
+                        compressionLevel === item.value
+                          ? item.color === 'emerald' ? 'text-emerald-700' :
+                            item.color === 'blue' ? 'text-blue-700' :
+                            item.color === 'amber' ? 'text-amber-700' : 'text-purple-700'
+                          : 'text-gray-800'
+                      }`}>{item.name}</p>
+                      <p className="text-gray-500 text-xs sm:text-sm mt-1 leading-tight">{item.desc}</p>
                     </div>
-                  )}
-                </div>
-              </button>
+                    {compressionLevel === item.value && (
+                      <div className={`w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center ${
+                        item.color === 'emerald' ? 'bg-emerald-500' :
+                        item.color === 'blue' ? 'bg-blue-500' :
+                        item.color === 'amber' ? 'bg-amber-500' : 'bg-purple-500'
+                      }`}>
+                        <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                    )}
+                  </div>
+                </button>
+              </div>
             ))}
           </div>
 
           {/* Custom KB Input */}
           {compressionLevel === 'custom' && (
-            <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-xl">
-              <label className="block text-purple-800 font-semibold mb-2">Target size (KB)</label>
+            <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-purple-50 border border-purple-200 rounded-xl">
+              <label className="block text-purple-800 font-semibold mb-2 text-xs sm:text-base">Target size (KB)</label>
               <div className="flex items-center gap-2">
                 <input
                   type="number"
                   value={customTargetKB}
                   onChange={(e) => setCustomTargetKB(e.target.value)}
                   placeholder={`e.g., ${Math.round(originalSizeKB * 0.1)}`}
-                  className="flex-1 px-4 py-3 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none text-lg font-medium"
+                  className="flex-1 px-3 sm:px-4 py-2 sm:py-3 border-2 border-purple-300 rounded-lg focus:border-purple-500 focus:outline-none text-xs sm:text-lg font-medium"
                 />
-                <span className="text-purple-600 font-semibold">KB</span>
+                <span className="text-purple-600 font-semibold text-xs sm:text-base">KB</span>
               </div>
-              <p className="text-purple-600 text-sm mt-2">Original: {originalSizeKB} KB</p>
+              <p className="text-purple-600 text-xs sm:text-sm mt-2">Original: {originalSizeKB} KB</p>
             </div>
           )}
 
           {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-100 rounded-lg p-4 mb-6">
-            <p className="text-blue-800 text-sm">
+          <div className="bg-blue-50 border border-blue-100 rounded-lg p-3 sm:p-4 mb-4 sm:mb-6">
+            <p className="text-blue-800 text-xs sm:text-sm">
               Your image will be compressed with the selected quality level.
             </p>
           </div>
@@ -475,33 +535,36 @@ const ImageCompressor = () => {
           <div className="flex-1"></div>
 
           {/* Action Buttons */}
-          <div className="space-y-3">
-            <button
-              onClick={compressImage}
-              disabled={isCompressing}
-              className="w-full py-4 bg-[#3D85C6] hover:bg-[#2E6BA6] text-white font-semibold text-lg rounded-lg transition-all duration-200 shadow-md flex items-center justify-center gap-3 disabled:opacity-50"
-            >
-              {isCompressing ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Compressing...
-                </>
-              ) : (
-                <>
-                  Compress IMAGE
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                  </svg>
-                </>
-              )}
-            </button>
-            
-            <button
-              onClick={resetAll}
-              className="w-full py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors"
-            >
-              Cancel
-            </button>
+          <div className="space-y-2 sm:space-y-3">
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={compressImage}
+                disabled={isCompressing}
+                className="w-full py-4 sm:py-5 bg-[#3D85C6] hover:bg-[#2E6BA6] text-white font-bold text-lg sm:text-xl rounded-2xl transition-all duration-200 shadow-lg flex items-center justify-center gap-4 disabled:opacity-50"
+                style={{ minHeight: '56px', fontSize: '1.25rem', letterSpacing: '0.01em' }}
+              >
+                {isCompressing ? (
+                  <>
+                    <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span className="text-base sm:text-lg">Compressing...</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="text-base sm:text-lg">Compress IMAGE</span>
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </>
+                )}
+              </button>
+              <button
+                onClick={resetAll}
+                className="w-full py-3 sm:py-4 text-gray-600 hover:text-gray-800 font-medium transition-colors text-base sm:text-lg rounded-2xl bg-gray-100 hover:bg-gray-200 shadow"
+                style={{ marginTop: '0px' }}
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       </main>
