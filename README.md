@@ -36,16 +36,21 @@ A fast, browser-based image compression tool built with React. Compress JPG, PNG
 
 ---
 
-## 🛠️ Tech Stack
 
-| Tool | Purpose |
-|------|---------|
-| [React 19](https://react.dev/) | UI framework |
-| [Vite 7](https://vite.dev/) | Build tool & dev server |
-| [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
-| [browser-image-compression](https://www.npmjs.com/package/browser-image-compression) | Client-side image compression |
-| [Firebase Auth](https://firebase.google.com/docs/auth) | Google & Email/Password authentication, email verification |
-| [ESLint](https://eslint.org/) | Code linting |
+## 🛠️ Tech Stack & Languages
+
+| Language | Tool | Purpose |
+|:--------:|------|---------|
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="24" height="24" alt="JS"/> | [React 19](https://react.dev/) | UI framework |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="24" height="24" alt="JS"/> | [Vite 7](https://vite.dev/) | Build tool & dev server |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="24" height="24" alt="CSS"/> | [Tailwind CSS 4](https://tailwindcss.com/) | Utility-first styling |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="24" height="24" alt="JS"/> | [browser-image-compression](https://www.npmjs.com/package/browser-image-compression) | Client-side image compression |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="24" height="24" alt="Firebase"/> | [Firebase Auth](https://firebase.google.com/docs/auth) | Google & Email/Password authentication, email verification |
+| <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/eslint/eslint-original.svg" width="24" height="24" alt="ESLint"/> | [ESLint](https://eslint.org/) | Code linting |
+
+<br/>
+
+**Languages used:** &nbsp; <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg" width="24" height="24" alt="JS"/> JavaScript &nbsp; <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/css3/css3-original.svg" width="24" height="24" alt="CSS"/> CSS &nbsp; <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/firebase/firebase-plain.svg" width="24" height="24" alt="Firebase"/>
 
 ---
 
