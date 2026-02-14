@@ -38,7 +38,7 @@ const Header = () => (
 // Reusable Footer Component
 const Footer = () => (
   <footer className="border-t border-gray-200 bg-white py-4 px-6">
-    <p className="text-center text-gray-400 text-sm">© ImageCompress 2026 ® - Your Image Editor</p>
+    <p className="text-center text-gray-400 text-base font-medium">Made with <span className="text-red-500">❤️</span></p>
   </footer>
 );
 
