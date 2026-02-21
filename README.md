@@ -1,8 +1,8 @@
 # 🖊️ ImageCompress
 
-A fast, browser-based image compression tool built with React, Vite, and Tailwind CSS. Compress JPG, PNG, SVG, and GIF files instantly — all processing happens in your browser, no uploads to any server.
+A fast, browser-based image compression tool built with React, Vite, and Tailwind CSS. Compress JPG, PNG, SVG, GIF, and WEBP files instantly — all processing happens in your browser, no uploads to any server.
 
-**Now with authentication (Google & Email), free trial gating, email verification, and secure Firebase keys using environment variables!**
+**Now with authentication (Google & Email), free trial gating, email verification, batch compression, drag & drop, SVG preview, and secure Firebase keys using environment variables!**
 
 ---
 
@@ -10,13 +10,16 @@ A fast, browser-based image compression tool built with React, Vite, and Tailwin
 
 | Upload Screen | Compression Options | Download Result |
 |---|---|---|
-| Select an image to compress | Pick Low / Medium / High / Custom | Download your compressed file |
+| Select images to compress (drag & drop or file picker) | Pick Low / Medium / High / Custom | Download your compressed files |
 
 ---
 
 ## ⚙️ Features
 
-- **Image Compression**: JPG, PNG, SVG, GIF
+- **Image Compression**: JPG, PNG, SVG, GIF, WEBP
+- **Batch Compression**: Compress multiple images at once
+- **Drag & Drop**: Upload images by dragging them onto the app
+- **SVG Preview**: See SVGs rendered as images
 - **Compression Levels**: Low, Medium, High, Custom (target KB)
 - **Authentication**: Google & Email/Password login, email verification
 - **Free Trial Gating**: 1 free compression for guests
